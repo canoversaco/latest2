@@ -1,0 +1,11 @@
+const path=require('path'),fs=require('fs'),Database=require('better-sqlite3')
+const DBp=()=>process.env.SQLITE_PATH||process.env.DATABASE_PATH||process.env.DB_FILE||path.join(process.cwd(),'data','plug.db')
+function init(){const p=DBp();fs.mkdirSync(path.dirname(p),{recursive:true});const db=new Database(p);db.pragma('journal_mode=WAL');db.exec(`CREATE TABLE IF NOT EXISTS inbox_messages(id INTEGER PRIMARY KEY AUTOINCREMENT,to_username TEXT,title TEXT NOT NULL,body TEXT NOT NULL,created_at TEXT DEFAULT (datetime('now')));`);return db}
+const streams=new Map();const key=u=>(u&&u!=='*')?u:'*';const push=(k,p)=>{const set=streams.get(k);if(!set)return;const line=`data: ${JSON.stringify(p)}\n\n`;for(const r of set){try{r.write(line)}catch{}}}
+function attach(app){const db=init();const ins=db.prepare('INSERT INTO inbox_messages(to_username,title,body) VALUES (?,?,?)');const list=db.prepare('SELECT * FROM inbox_messages WHERE to_username IS NULL OR to_username=@u ORDER BY id DESC')
+  app.get('/api/inbox',(req,res)=>{try{const u=String(req.query.user||'');if(!u)return res.status(400).json({error:'user erforderlich'});res.json({messages:list.all({u})})}catch(e){res.status(500).json({error:'Fehler beim Laden'})}})
+  app.get('/api/inbox/stream',(req,res)=>{const u=String(req.query.user||'');if(!u){res.status(400).end();return}res.writeHead(200,{'Content-Type':'text/event-stream','Cache-Control':'no-cache',Connection:'keep-alive','Access-Control-Allow-Origin':'*'});res.write('\n');const ku=key(u);let su=streams.get(ku);if(!su){su=new Set();streams.set(ku,su)};su.add(res);let sa=streams.get('*');if(!sa){sa=new Set();streams.set('*',sa)};sa.add(res);req.on('close',()=>{try{su.delete(res);sa.delete(res)}catch{}})})
+  app.post('/api/admin/messages',(req,res)=>{try{const {to='*',title='',body=''}=req.body||{};if(!title||!body)return res.status(400).json({error:'Titel/Text erforderlich'});const t=(to==='*'||to==='all')?null:String(to);const info=ins.run(t,title,body);const msg={id:info.lastInsertRowid,to_username:t,title,body,created_at:new Date().toISOString()};push('*',{type:'inbox',message:msg});if(t)push(t,{type:'inbox',message:msg});res.json({ok:true,message:msg})}catch(e){res.status(500).json({error:'Senden fehlgeschlagen'})}})
+  console.log('[inbox_api] aktiv.')
+}
+module.exports={attach}

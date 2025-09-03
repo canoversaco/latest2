@@ -1,0 +1,68 @@
+@tailwind base; @tailwind components; @tailwind utilities;
+
+html,body { background: #0B0F17; color: #E2E8F0; }
+
+.container { @apply max-w-3xl mx-auto; }
+.card { @apply rounded-xl p-5 bg-slate-900/80 backdrop-blur border border-slate-800 shadow-[0_12px_40px_rgba(0,0,0,.35)]; }
+.btn { @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-slate-700 text-slate-100 bg-slate-800 hover:bg-slate-700 active:shadow-inner transition; }
+.btn-primary { @apply border-transparent bg-emerald-400 text-slate-900 font-semibold hover:opacity-90; }
+.btn-ghost { @apply border-slate-700 bg-transparent hover:bg-slate-800; }
+.input { @apply w-full px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400; }
+.badge { @apply absolute -top-1 -right-1 text-[10px] px-1 rounded bg-rose-500 text-white; }
+.badge-new {
+  @apply absolute top-2 right-2 text-[11px] font-extrabold px-2 py-1 rounded-full border;
+  background: linear-gradient(135deg,#FFF3CD,#FFE082); color:#7A5E00; border-color:#FFD54F;
+  box-shadow: 0 0 10px rgba(255,213,79,.6), 0 0 20px rgba(255,213,79,.4);
+}
+
+.brand {
+  background: linear-gradient(90deg,#00E5A8,#6C63FF,#FFB020);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  background-size:300% 300%; animation: sheen 6s linear infinite;
+  @apply font-extrabold text-xl tracking-wider;
+}
+.logo-dot { width:8px; height:8px; border-radius:9999px; background:#00E5A8; display:inline-block; margin-right:.5rem; }
+@keyframes sheen { 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
+
+.bottom-nav { @apply fixed bottom-3 inset-x-0 flex justify-center pointer-events-none; }
+.bottom-nav .wrap { @apply pointer-events-auto flex gap-1 bg-slate-900/90 backdrop-blur border border-slate-800 rounded-3xl px-2 py-1 shadow-[0_10px_30px_rgba(0,0,0,.4)]; }
+.tab { @apply flex flex-col items-center justify-center px-4 py-2 rounded-2xl text-[11px] min-w-[64px] text-slate-300; }
+.tab.active { @apply bg-slate-800 text-emerald-300; }
+
+/* ✨ Neon / Blink Effekte */
+@keyframes neonGlow {
+  0%,100% { box-shadow: 0 0 0 rgba(255,215,0,0); }
+  50% { box-shadow: 0 0 24px rgba(255,215,0,.9), 0 0 60px rgba(255,215,0,.5); }
+}
+.neon-gold { border: 2px solid #FFD54F; animation: neonGlow 1.6s ease-in-out infinite; }
+
+@keyframes blinkSoft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .75; }
+}
+.blink-soft { animation: blinkSoft 2.2s ease-in-out infinite; }
+
+/* 🎡 Roulette */
+.roulette-wrap { @apply relative mx-auto; width: 280px; height: 280px; }
+.roulette-wheel {
+  position:absolute; inset:0; border-radius:50%;
+  background: radial-gradient(circle at 50% 50%, #222 0 35%, #111 36% 54%, #000 55% 100%);
+  border: 6px solid #333;
+  box-shadow: inset 0 0 20px rgba(0,0,0,.8);
+  transform: rotate(0deg);
+  transition: transform 3s cubic-bezier(.17,.84,.44,1);
+}
+.roulette-pointer { position:absolute; top:-8px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-bottom:16px solid #FFD54F; filter:drop-shadow(0 0 6px rgba(255,213,79,.6)); }
+.roulette-label { position:absolute; inset:10%; border-radius:50%; pointer-events:none; }
+.roulette-number {
+  position:absolute; left:50%; top:50%; transform-origin:0 -100px; color:#eee; font-size:10px; font-weight:700;
+  text-shadow: 0 1px 2px rgba(0,0,0,.6);
+}
+
+/* 🃏 Karten */
+.deck { @apply relative h-24; }
+.card3d { @apply w-14 h-20 rounded-lg border border-slate-600 bg-slate-800 text-white flex items-center justify-center font-bold; transform-style:preserve-3d; perspective:800px; }
+.card3d.flip { transition: transform .5s ease; transform: rotateY(180deg); }
+.card-face { position:absolute; inset:0; backface-visibility:hidden; display:flex; align-items:center; justify-content:center; }
+.card-back { background: repeating-linear-gradient(45deg,#111 0 8px,#151515 8px 16px); transform: rotateY(180deg); border-radius:.5rem; }
+.card-front { background: #0f172a; }
